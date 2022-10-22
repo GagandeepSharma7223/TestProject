@@ -1,0 +1,92 @@
+﻿
+@{
+    ViewBag.Title = "Test";
+}
+
+<style>
+    .download {
+        display: none;
+        top: 15px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100px;
+    }
+</style>
+<div class="container my-3">
+    <div class="row">
+        <div class="col-sm-6">
+            <h3>Upload File</h3>
+            <div class="custom-file">
+                <input type="file" class="file-input" multiple onchange="Folders.upload(this)" id="customFile" name="filename">
+                <label class="custom-file-label" for="customFile">Choose file</label>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <h3>Search File/Folder</h3>
+            <input type="text" class="form-control col-sm-8 d-inline" onkeypress="Folders.onKeyPressSearchFile(event)" id="searchFile">
+            <button class="btn btn-success mb-2 ml-2" onclick="Folders.search()">Search</button>
+            <button id="btnClear" class="btn btn-secondary mb-2 ml-2" style="display: none;" onclick="Folders.clear()">Clear</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <button id="btnBack" style="display:none;" class="btn btn-primary" onclick="Folders.back()">Back</button>
+        </div>
+    </div>
+</div>
+
+<div id="foldersContainer" class="row container ">
+
+</div>
+
+<div id="filesContainer" class="row container ">
+
+</div>
+
+<input type="hidden" name="hdnDirPath" id="hdnDirPath" value="" />
+<input type="hidden" name="hdnRootPath" id="hdnRootPath" value="@ViewBag.RootDirectory" />
+
+
+@section scripts{
+    <script src="~/JS/upload.js"></script>
+    <script>
+        $(document).ready(function () {
+            Folders.getFiles();
+            Folders.get();
+
+            $(document).on("mouseenter", ".icon-file", function () {
+                $(this).find('.download').show();
+                $(this).find('.fa-file').css('opacity', '0.2');
+            });
+
+            $(document).on("mouseleave", ".icon-file", function () {
+                $(this).find('.download').hide();
+                $(this).find('.fa-file').css('opacity', '1');
+            });
+
+            $(document).on("click", ".download", function () {
+                const filePath = $(this).data('path');
+                Folders.download(filePath);
+            });
+
+            $(document).on("click", ".folder-icon", function () {
+                const rootFolder = $(this).data('folder');
+                $('#hdnDirPath').val(rootFolder);
+                $('#btnBack').show();
+                Folders.getFiles(rootFolder);
+                Folders.get(rootFolder);
+            });
+
+            $(document).on("click", "#btnAddFolder", function () {
+                $('#myModal').modal('show');
+            });
+
+            $('#btnSaveFolder').click(function () {
+                Folders.saveFolder();
+            });
+        });
+    </script>
+}
